@@ -2,14 +2,14 @@
 	queue
 	This question requires you to use queues to implement the functionality of the stac
 */
-// I AM NOT DONE
+// I AM DONE
 
 #[derive(Debug)]
-pub struct Queue<T> {
+pub struct Queue<T: Copy> {
     elements: Vec<T>,
 }
 
-impl<T> Queue<T> {
+impl<T: Copy> Queue<T> {
     pub fn new() -> Queue<T> {
         Queue {
             elements: Vec::new(),
@@ -44,7 +44,7 @@ impl<T> Queue<T> {
     }
 }
 
-impl<T> Default for Queue<T> {
+impl<T: Copy> Default for Queue<T> {
     fn default() -> Queue<T> {
         Queue {
             elements: Vec::new(),
@@ -52,30 +52,43 @@ impl<T> Default for Queue<T> {
     }
 }
 
-pub struct myStack<T>
+pub struct myStack<T: Copy>
 {
 	//TODO
+    length: usize,
 	q1:Queue<T>,
 	q2:Queue<T>
 }
-impl<T> myStack<T> {
+impl<T: Copy> myStack<T> {
     pub fn new() -> Self {
         Self {
 			//TODO
+            length: 0,
 			q1:Queue::<T>::new(),
 			q2:Queue::<T>::new()
         }
     }
     pub fn push(&mut self, elem: T) {
         //TODO
+        self.q2.enqueue(elem);
+        while let Ok(val) = self.q1.dequeue() {
+            self.q2.enqueue(val);
+        }
+        std::mem::swap(&mut self.q1, &mut self.q2);
+        self.length += 1;
     }
     pub fn pop(&mut self) -> Result<T, &str> {
         //TODO
-		Err("Stack is empty")
+        if self.is_empty() {
+            Err("Stack is empty")
+        } else {
+            self.length -= 1;
+            self.q1.dequeue()
+        }
     }
     pub fn is_empty(&self) -> bool {
 		//TODO
-        true
+        self.length == 0
     }
 }
 

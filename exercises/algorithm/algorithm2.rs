@@ -2,20 +2,20 @@
 	double linked list reverse
 	This problem requires you to reverse a doubly linked list
 */
-// I AM NOT DONE
+// I AM DONE
 
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
 use std::vec::*;
 
-#[derive(Debug)]
-struct Node<T> {
+#[derive(Debug, Clone)]
+struct Node<T: std::cmp::PartialOrd + Clone> {
     val: T,
     next: Option<NonNull<Node<T>>>,
     prev: Option<NonNull<Node<T>>>,
 }
 
-impl<T> Node<T> {
+impl<T: std::cmp::PartialOrd + Clone> Node<T> {
     fn new(t: T) -> Node<T> {
         Node {
             val: t,
@@ -24,20 +24,20 @@ impl<T> Node<T> {
         }
     }
 }
-#[derive(Debug)]
-struct LinkedList<T> {
+#[derive(Debug, Clone)]
+struct LinkedList<T: std::cmp::PartialOrd + Clone> {
     length: u32,
     start: Option<NonNull<Node<T>>>,
     end: Option<NonNull<Node<T>>>,
 }
 
-impl<T> Default for LinkedList<T> {
+impl<T: std::cmp::PartialOrd + Clone> Default for LinkedList<T> {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl<T> LinkedList<T> {
+impl<T: std::cmp::PartialOrd + Clone> LinkedList<T> {
     pub fn new() -> Self {
         Self {
             length: 0,
@@ -73,11 +73,26 @@ impl<T> LinkedList<T> {
         }
     }
 	pub fn reverse(&mut self){
-		// TODO
+		let mut store: Vec<T> = Vec::new();
+        let mut ptr: Option<NonNull<Node<T>>> = self.start;
+        while let Some(x) = ptr {
+            unsafe{
+                store.push((*x.as_ptr()).val.clone());
+                ptr = (*x.as_ptr()).next;
+                let boxed_node = Box::from_raw(x.as_ptr()); // drop
+            }
+        }
+        self.length = 0;
+        self.start = None;
+        self.end = None;
+        while store.is_empty() == false {
+            let n = store.pop().unwrap();
+            self.add(n);
+        }
 	}
 }
 
-impl<T> Display for LinkedList<T>
+impl<T: std::cmp::PartialOrd + Clone> Display for LinkedList<T>
 where
     T: Display,
 {
@@ -89,7 +104,7 @@ where
     }
 }
 
-impl<T> Display for Node<T>
+impl<T: std::cmp::PartialOrd + Clone> Display for Node<T>
 where
     T: Display,
 {
